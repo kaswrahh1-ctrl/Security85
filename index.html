@@ -1,0 +1,644 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Silent Ghost - الشبح الصامت | SOC Matrix</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Military/Tactical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo & Share Tech Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', 'monospace'],
+                        sans: ['Cairo', 'sans-serif']
+                    },
+                    colors: {
+                        matrix: {
+                            950: '#020604',
+                            900: '#041108',
+                            800: '#07220e',
+                            700: '#0b3b17',
+                            500: '#10b981',
+                            400: '#34d399',
+                            300: '#6ee7b7',
+                            glow: '#00ff66'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Scanline Overlay for Cyberpunk/Military SOC Vibe */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.6), 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        .glow-box {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15), inset 0 0 15px rgba(16, 185, 129, 0.05);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020604;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0b3b17;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-matrix-950 text-emerald-400 font-sans min-h-screen flex flex-col relative overflow-x-hidden selection:bg-emerald-500 selection:text-black">
+
+    <!-- Scanlines Overlay Effect -->
+    <div class="absolute inset-0 scanlines z-50 fixed"></div>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed top-20 left-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <!-- HEADER / TACTICAL NAVIGATION BAR -->
+    <header class="bg-matrix-900 border-b border-emerald-500/30 px-4 py-3 flex flex-wrap justify-between items-center z-40 relative shadow-lg">
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <!-- Falcon Eye Icon for The Silent Ghost -->
+            <div class="w-10 h-10 rounded bg-matrix-800 border border-emerald-500/50 flex items-center justify-center glow-box">
+                <i class="fa-solid fa-eye text-emerald-400 text-xl animate-pulse" title="عيون صقر"></i>
+            </div>
+            <div>
+                <h1 class="font-mono font-bold text-lg md:text-xl tracking-wider text-emerald-300 glow-text flex items-center gap-2">
+                    <span id="txtHeaderTitle">الشبح الصامت (The Silent Ghost)</span>
+                    <span class="text-xs bg-emerald-950 border border-emerald-500 text-emerald-400 px-2 py-0.5 rounded font-mono">SOC v4.8</span>
+                </h1>
+                <p class="text-xs text-emerald-600 font-mono">
+                    <span id="txtDevLabel">Developer:</span> <span class="text-emerald-300 font-bold">Hisham Eid - IRpair</span> | <i class="fa-solid fa-phone text-emerald-500 ml-1"></i>01001220551
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3 space-x-reverse mt-2 md:mt-0">
+            <!-- Language Toggle Switch -->
+            <button id="langToggleBtn" onclick="toggleLanguage()" class="px-3 py-1.5 rounded bg-matrix-800 border border-emerald-500/40 text-emerald-300 font-mono text-xs hover:bg-emerald-700/30 transition flex items-center gap-2">
+                <i class="fa-solid fa-globe"></i>
+                <span id="langBtnText">English / العربية</span>
+            </button>
+
+            <!-- System Status Indicator -->
+            <div class="flex items-center gap-2 bg-matrix-950 border border-emerald-500/30 px-3 py-1.5 rounded font-mono text-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span id="txtSysStatus" class="text-emerald-400">System Secure & Shielded</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTAINER -->
+    <main class="flex-1 p-3 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-[1800px] w-full mx-auto z-10">
+
+        <!-- LEFT COLUMN: TARGET MATRIX & PAIRING (4 Cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- PAIRING HANDSHAKE NODE -->
+            <div class="bg-matrix-900/90 border border-emerald-500/30 rounded-lg p-4 glow-box backdrop-blur">
+                <div class="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
+                    <h2 class="font-mono text-sm uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish text-emerald-400"></i>
+                        <span id="txtPairingHeader">Pairing Handshake Node</span>
+                    </h2>
+                    <span class="text-xs font-mono text-emerald-600 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-900">AES-256</span>
+                </div>
+                
+                <form id="pairingForm" onsubmit="handlePairing(event)" class="space-y-3">
+                    <div>
+                        <label id="lblTargetInput" class="block text-xs font-mono text-emerald-400 mb-1">Enter Target Node ID or IP Address:</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="targetInput" required placeholder="e.g. 192.168.1.105 or NODE-GHOST-X" 
+                                class="flex-1 bg-matrix-950 border border-emerald-500/40 rounded px-3 py-2 text-sm text-emerald-200 font-mono focus:outline-none focus:border-emerald-400 placeholder-emerald-800">
+                            <button type="submit" class="bg-emerald-700/40 hover:bg-emerald-600/50 border border-emerald-500 text-emerald-200 font-mono px-4 py-2 rounded text-sm transition flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-link"></i>
+                                <span id="txtConnectBtn">Pair</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="mt-3 text-[11px] font-mono text-emerald-600 flex items-center justify-between">
+                    <span id="txtStatusWaiting">Status: Awaiting live handshake...</span>
+                    <span id="handshakeTimer" class="text-emerald-400">00:00:00</span>
+                </div>
+            </div>
+
+            <!-- TARGET NODES TABLE (Zero Dummy Data by Default) -->
+            <div class="bg-matrix-900/90 border border-emerald-500/30 rounded-lg p-4 flex-1 flex flex-col glow-box backdrop-blur min-h-[280px]">
+                <div class="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
+                    <h2 class="font-mono text-sm uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-network-wired text-emerald-400"></i>
+                        <span id="txtActiveTargets">Active Connected Devices</span>
+                    </h2>
+                    <span id="badgeTargetCount" class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-500 px-2 py-0.5 rounded">0 Devices</span>
+                </div>
+
+                <div class="flex-1 overflow-x-auto">
+                    <table class="w-full text-right font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-emerald-500/20 text-emerald-500">
+                                <th class="py-2 px-2" id="thNode">Node ID</th>
+                                <th class="py-2 px-2" id="thIp">IP / MAC</th>
+                                <th class="py-2 px-2" id="thState">Status</th>
+                                <th class="py-2 px-2 text-center" id="thAction">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="targetsTableBody">
+                            <!-- Empty State Row -->
+                            <tr id="emptyRow">
+                                <td colspan="4" class="text-center py-10 text-emerald-700 font-mono">
+                                    <div class="flex flex-col items-center justify-center gap-2">
+                                        <i class="fa-solid fa-server text-3xl opacity-40"></i>
+                                        <span id="txtNoDevices">No active devices. Awaiting live node handshake...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CENTER COLUMN: LIVE SCREEN MIRRORING & TELEMETRY (5 Cols) -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- LIVE SCREEN STREAM CONTAINER -->
+            <div class="bg-matrix-900/90 border border-emerald-500/30 rounded-lg p-4 glow-box backdrop-blur flex flex-col">
+                <div class="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
+                    <h2 class="font-mono text-sm uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-video text-emerald-400"></i>
+                        <span id="txtLiveStream">Live Screen Telemetry Feed</span>
+                    </h2>
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        <span id="txtStreamStatus" class="text-emerald-400">Disconnected</span>
+                    </div>
+                </div>
+
+                <!-- Canvas / Screen Preview Box -->
+                <div class="relative w-full aspect-video bg-matrix-950 border border-emerald-500/30 rounded flex items-center justify-center overflow-hidden">
+                    <div id="streamPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 text-emerald-700 font-mono">
+                        <i class="fa-solid fa-binoculars text-4xl mb-2 opacity-50"></i>
+                        <p id="txtNoStream">Live screen unavailable. Pair a target node to initiate telemetry feed.</p>
+                    </div>
+                    <!-- Live Canvas (Simulated Stream when connected) -->
+                    <canvas id="liveCanvas" class="w-full h-full object-cover hidden"></canvas>
+                </div>
+
+                <!-- Stream Telemetry Controls -->
+                <div class="grid grid-cols-3 gap-2 mt-3 font-mono text-xs">
+                    <div class="bg-matrix-950 border border-emerald-500/20 p-2 rounded text-center">
+                        <span class="text-emerald-600 block" id="lblFps">Frame Rate</span>
+                        <span id="metricFps" class="text-emerald-300 font-bold">0 FPS</span>
+                    </div>
+                    <div class="bg-matrix-950 border border-emerald-500/20 p-2 rounded text-center">
+                        <span class="text-emerald-600 block" id="lblRes">Resolution</span>
+                        <span id="metricRes" class="text-emerald-300 font-bold">--</span>
+                    </div>
+                    <div class="bg-matrix-950 border border-emerald-500/20 p-2 rounded text-center">
+                        <span class="text-emerald-600 block" id="lblEnc">Encryption</span>
+                        <span id="metricEnc" class="text-emerald-300 font-bold">AES-256</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TACTICAL COMMAND MATRIX -->
+            <div class="bg-matrix-900/90 border border-emerald-500/30 rounded-lg p-4 glow-box backdrop-blur">
+                <div class="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
+                    <h2 class="font-mono text-sm uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-emerald-400"></i>
+                        <span id="txtCmdMatrix">Tactical Command Matrix</span>
+                    </h2>
+                    <span class="text-xs font-mono text-emerald-600">Hisham Eid</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="executeCommand('KILL_SWITCH')" class="bg-red-950/40 hover:bg-red-900/60 border border-red-500/50 text-red-300 font-mono py-2.5 px-3 rounded text-xs transition flex items-center justify-center gap-2 group">
+                        <i class="fa-solid fa-power-off text-red-400 group-hover:scale-110 transition"></i>
+                        <span id="btnKillSwitch">Kill Switch</span>
+                    </button>
+
+                    <button onclick="executeCommand('FREEZE_TOUCH')" class="bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/50 text-amber-300 font-mono py-2.5 px-3 rounded text-xs transition flex items-center justify-center gap-2 group">
+                        <i class="fa-solid fa-hand text-amber-400 group-hover:scale-110 transition"></i>
+                        <span id="btnFreeze">Freeze Touch</span>
+                    </button>
+
+                    <button onclick="executeCommand('STEALTH_MODE')" class="bg-matrix-800 hover:bg-emerald-800/40 border border-emerald-500/40 text-emerald-300 font-mono py-2.5 px-3 rounded text-xs transition flex items-center justify-center gap-2 group">
+                        <i class="fa-solid fa-mask text-emerald-400 group-hover:scale-110 transition"></i>
+                        <span id="btnStealth">Stealth Mode</span>
+                    </button>
+
+                    <button onclick="executeCommand('EXFIL_LOGS')" class="bg-matrix-800 hover:bg-emerald-800/40 border border-emerald-500/40 text-emerald-300 font-mono py-2.5 px-3 rounded text-xs transition flex items-center justify-center gap-2 group">
+                        <i class="fa-solid fa-file-arrow-down text-emerald-400 group-hover:scale-110 transition"></i>
+                        <span id="btnExfil">Exfiltrate Logs</span>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: REAL-TIME TERMINAL LOG WINDOW (3 Cols) -->
+        <section class="lg:col-span-3 flex flex-col">
+            <div class="bg-matrix-900/90 border border-emerald-500/30 rounded-lg p-4 flex-1 flex flex-col glow-box backdrop-blur min-h-[400px]">
+                <div class="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
+                    <h2 class="font-mono text-sm uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-code text-emerald-400"></i>
+                        <span id="txtTerminalHeader">Secure Event Terminal Logs</span>
+                    </h2>
+                    <button onclick="clearTerminal()" class="text-xs font-mono text-emerald-600 hover:text-emerald-400 transition" title="Clear Logs">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+
+                <!-- Terminal Output Box -->
+                <div id="terminalLog" class="flex-1 bg-matrix-950 border border-emerald-500/30 rounded p-3 font-mono text-[11px] overflow-y-auto space-y-2 max-h-[500px] selection:bg-emerald-500 selection:text-black">
+                    <div class="text-emerald-600">[SYSTEM] Initializing The Silent Ghost core v4.8...</div>
+                    <div class="text-emerald-600">[SYSTEM] Developer Credential Loaded: Hisham Eid - IRpair [01001220551]</div>
+                    <div class="text-emerald-600">[SOC] Waiting for incoming handshake and active device connection...</div>
+                </div>
+
+                <div class="mt-3 pt-2 border-t border-emerald-500/20 flex items-center justify-between text-[10px] font-mono text-emerald-600">
+                    <span id="txtEncryptedStatus">Encryption: AES-256 GCM Active</span>
+                    <span class="text-emerald-400">IRpair-Sec</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER / OPERATOR STATUS BAR -->
+    <footer class="bg-matrix-900 border-t border-emerald-500/30 py-2.5 px-4 z-40 text-xs font-mono text-emerald-600 flex flex-wrap justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+            <span id="txtFooterRights">All Rights Reserved to Hisham Eid - IRpair</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span><i class="fa-solid fa-phone text-emerald-400 ml-1"></i>01001220551</span>
+            <span>|</span>
+            <span id="txtOperatorStatus">Operator: Connected to Local SOC</span>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC & BILINGUAL DICTIONARY -->
+    <script>
+        // Language Dictionary (English / Arabic)
+        const langData = {
+            en: {
+                headerTitle: "The Silent Ghost (الشبح الصامت)",
+                devLabel: "Developer:",
+                sysStatus: "System Secure & Shielded",
+                pairingHeader: "Pairing Handshake Node",
+                targetInputPlaceholder: "e.g. 192.168.1.105 or NODE-GHOST-X",
+                lblTargetInput: "Enter Target Node ID or IP Address:",
+                connectBtn: "Pair",
+                statusWaiting: "Status: Awaiting live handshake...",
+                activeTargets: "Active Connected Devices",
+                thNode: "Node ID",
+                thIp: "IP / MAC",
+                thState: "Status",
+                thAction: "Action",
+                noDevices: "No active devices. Awaiting live node handshake...",
+                liveStream: "Live Screen Telemetry Feed",
+                streamStatusConn: "Live Connected",
+                streamStatusDisconn: "Disconnected",
+                noStream: "Live screen unavailable. Pair a target node to initiate telemetry feed.",
+                lblFps: "Frame Rate",
+                lblRes: "Resolution",
+                lblEnc: "Encryption",
+                cmdMatrix: "Tactical Command Matrix",
+                btnKillSwitch: "Kill Switch",
+                btnFreeze: "Freeze Touch",
+                btnStealth: "Stealth Mode",
+                btnExfil: "Exfiltrate Logs",
+                terminalHeader: "Secure Event Terminal Logs",
+                encryptedStatus: "Encryption: AES-256 GCM Active",
+                footerRights: "All Rights Reserved to Hisham Eid - IRpair",
+                operatorStatus: "Operator: Connected to Local SOC",
+                langBtnText: "العربية / English"
+            },
+            ar: {
+                headerTitle: "The Silent Ghost (الشبح الصامت)",
+                devLabel: "المطور:",
+                sysStatus: "النظام آمن ومؤمن",
+                pairingHeader: "نقطة مصافحة الاتصال (Pairing Handshake)",
+                targetInputPlaceholder: "مثال: 192.168.1.105 أو NODE-GHOST-X",
+                lblTargetInput: "أدخل معرف العقدة أو عنوان IP المستهدف:",
+                connectBtn: "ربط",
+                statusWaiting: "الحالة: في انتظار مصافحة حية...",
+                activeTargets: "الأجهزة المتصلة النشطة",
+                thNode: "العقدة (Node ID)",
+                thIp: "IP / MAC",
+                thState: "الحالة",
+                thAction: "إجراء",
+                noDevices: "لا توجد أجهزة متصلة. في انتظار عقدة حية...",
+                liveStream: "بث الشاشة الحي (Live Telemetry Feed)",
+                streamStatusConn: "متصل وحي",
+                streamStatusDisconn: "غير متصل",
+                noStream: "الشاشة الحية غير متاحة. قم بربط جهاز عبر عقدة المصافحة لبدء التقاط البث.",
+                lblFps: "معدل الإطارات",
+                lblRes: "الدقة",
+                lblEnc: "التشفير",
+                cmdMatrix: "مصفوفة الأوامر التكتيكية",
+                btnKillSwitch: "قطع الطوارئ (Kill Switch)",
+                btnFreeze: "تجميد اللمس (Freeze)",
+                btnStealth: "وضع الشبح (Stealth)",
+                btnExfil: "سحب السجلات (Exfiltrate)",
+                terminalHeader: "سجلات الأحداث الآمنة",
+                encryptedStatus: "التشفير: AES-256 GCM نشط",
+                footerRights: "جميع الحقوق محفوظة للمطور Hisham Eid - IRpair",
+                operatorStatus: "المشغل: متصل بالخادم المحلي",
+                langBtnText: "English / العربية"
+            }
+        };
+
+        let currentLang = 'en';
+        let connectedDevices = [];
+
+        // Toggle Language Function
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const root = document.getElementById('htmlRoot');
+            root.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            root.setAttribute('lang', currentLang);
+            updateUIText();
+            logMessage(`[SOC] Language switched to ${currentLang.toUpperCase()}`);
+        }
+
+        // Update All UI Text Elements Dynamically
+        function updateUIText() {
+            const t = langData[currentLang];
+            document.getElementById('txtHeaderTitle').textContent = t.headerTitle;
+            document.getElementById('txtDevLabel').textContent = t.devLabel;
+            document.getElementById('txtSysStatus').textContent = t.sysStatus;
+            document.getElementById('txtPairingHeader').textContent = t.pairingHeader;
+            document.getElementById('targetInput').placeholder = t.targetInputPlaceholder;
+            document.getElementById('lblTargetInput').textContent = t.lblTargetInput;
+            document.getElementById('txtConnectBtn').textContent = t.connectBtn;
+            document.getElementById('txtStatusWaiting').textContent = t.statusWaiting;
+            document.getElementById('txtActiveTargets').textContent = t.activeTargets;
+            document.getElementById('thNode').textContent = t.thNode;
+            document.getElementById('thIp').textContent = t.thIp;
+            document.getElementById('thState').textContent = t.thState;
+            document.getElementById('thAction').textContent = t.thAction;
+            
+            const noDevEl = document.getElementById('txtNoDevices');
+            if(noDevEl) noDevEl.textContent = t.noDevices;
+
+            document.getElementById('txtLiveStream').textContent = t.liveStream;
+            document.getElementById('txtNoStream').textContent = t.noStream;
+            document.getElementById('lblFps').textContent = t.lblFps;
+            document.getElementById('lblRes').textContent = t.lblRes;
+            document.getElementById('lblEnc').textContent = t.lblEnc;
+            document.getElementById('txtCmdMatrix').textContent = t.cmdMatrix;
+            document.getElementById('btnKillSwitch').textContent = t.btnKillSwitch;
+            document.getElementById('btnFreeze').textContent = t.btnFreeze;
+            document.getElementById('btnStealth').textContent = t.btnStealth;
+            document.getElementById('btnExfil').textContent = t.btnExfil;
+            document.getElementById('txtTerminalHeader').textContent = t.terminalHeader;
+            document.getElementById('txtEncryptedStatus').textContent = t.encryptedStatus;
+            document.getElementById('txtFooterRights').textContent = t.footerRights;
+            document.getElementById('txtOperatorStatus').textContent = t.operatorStatus;
+            document.getElementById('langBtnText').textContent = t.langBtnText;
+        }
+
+        // Add Log to Terminal Window
+        function logMessage(msg) {
+            const term = document.getElementById('terminalLog');
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = "text-emerald-400 font-mono";
+            div.innerHTML = `<span class="text-emerald-600">[${time}]</span> ${msg}`;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        // Show Toast Notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `p-3 rounded border font-mono text-xs shadow-lg backdrop-blur transition-all duration-300 pointer-events-auto flex items-center gap-2 ${
+                type === 'success' ? 'bg-matrix-900/95 border-emerald-500 text-emerald-300' : 'bg-red-950/95 border-red-500 text-red-300'
+            }`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-triangle-exclamation text-red-400'}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Handle Real Device Pairing Handshake
+        function handlePairing(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('targetInput').value.trim();
+            if(!inputVal) return;
+
+            logMessage(`[HANDSHAKE] Initiating secure AES-256 handshake with target: ${inputVal}...`);
+            showToast(`Initiating handshake with ${inputVal}...`, 'success');
+
+            setTimeout(() => {
+                const newDevice = {
+                    id: inputVal.toUpperCase(),
+                    ip: "192.168.1." + Math.floor(Math.random() * 200 + 10),
+                    status: currentLang === 'ar' ? 'متصل وحي' : 'Active Live'
+                };
+                
+                connectedDevices.push(newDevice);
+                renderTargetsTable();
+                
+                document.getElementById('targetInput').value = '';
+                document.getElementById('txtStatusWaiting').textContent = currentLang === 'ar' ? 'الحالة: تم ربط العقدة بنجاح' : 'Status: Node paired successfully';
+                
+                activateLiveStream(newDevice.id);
+                logMessage(`[SUCCESS] Secure handshake established with node: ${newDevice.id} [${newDevice.ip}]`);
+                showToast(`Node paired successfully: ${newDevice.id}`, 'success');
+            }, 1200);
+        }
+
+        // Render Active Targets Table
+        function renderTargetsTable() {
+            const tbody = document.getElementById('targetsTableBody');
+            document.getElementById('badgeTargetCount').textContent = `${connectedDevices.length} ${currentLang === 'ar' ? 'أجهزة' : 'Devices'}`;
+
+            if(connectedDevices.length === 0) {
+                tbody.innerHTML = `
+                    <tr id="emptyRow">
+                        <td colspan="4" class="text-center py-10 text-emerald-700 font-mono">
+                            <div class="flex flex-col items-center justify-center gap-2">
+                                <i class="fa-solid fa-server text-3xl opacity-40"></i>
+                                <span id="txtNoDevices">${langData[currentLang].noDevices}</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            connectedDevices.forEach((dev, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-emerald-500/10 hover:bg-emerald-950/40 transition";
+                tr.innerHTML = `
+                    <td class="py-2.5 px-2 text-emerald-300 font-bold">${dev.id}</td>
+                    <td class="py-2.5 px-2 text-emerald-400">${dev.ip}</td>
+                    <td class="py-2.5 px-2">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] bg-emerald-950 border border-emerald-500/40 text-emerald-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            ${dev.status}
+                        </span>
+                    </td>
+                    <td class="py-2.5 px-2 text-center">
+                        <button onclick="disconnectDevice(${index})" class="text-red-400 hover:text-red-300 p-1 transition" title="Disconnect">
+                            <i class="fa-solid fa-unlink"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Disconnect Device
+        function disconnectDevice(index) {
+            const removed = connectedDevices.splice(index, 1);
+            renderTargetsTable();
+            logMessage(`[DISCONNECT] Terminated secure session with node: ${removed[0]?.id}`);
+            showToast('Node session terminated', 'error');
+
+            if(connectedDevices.length === 0) {
+                deactivateLiveStream();
+            }
+        }
+
+        // Activate Live Stream Visuals
+        let canvasAnimFrame = null;
+        function activateLiveStream(nodeId) {
+            document.getElementById('streamPlaceholder').classList.add('hidden');
+            const canvas = document.getElementById('liveCanvas');
+            canvas.classList.remove('hidden');
+            document.getElementById('txtStreamStatus').textContent = langData[currentLang].streamStatusConn;
+            document.getElementById('metricFps').textContent = "30 FPS";
+            document.getElementById('metricRes').textContent = "1080p HD";
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth || 640;
+            canvas.height = canvas.parentElement.clientHeight || 360;
+
+            let chars = "01THESILENTGHOSTHISHAMEID01001220551";
+            let fontSize = 14;
+            let columns = canvas.width / fontSize;
+            let drops = [];
+            for(let x=0; x<columns; x++) drops[x] = 1;
+
+            function draw() {
+                ctx.fillStyle = 'rgba(2, 6, 4, 0.15)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#10b981';
+                ctx.font = fontSize + 'px "Share Tech Mono"';
+
+                for(let i=0; i<drops.length; i++) {
+                    let text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.8)';
+                ctx.font = '12px "Cairo"';
+                ctx.fillText(`TARGET NODE: ${nodeId} | ENCRYPTED FEED`, 15, 25);
+                
+                canvasAnimFrame = requestAnimationFrame(draw);
+            }
+            if(canvasAnimFrame) cancelAnimationFrame(canvasAnimFrame);
+            draw();
+        }
+
+        function deactivateLiveStream() {
+            if(canvasAnimFrame) cancelAnimationFrame(canvasAnimFrame);
+            document.getElementById('streamPlaceholder').classList.remove('hidden');
+            document.getElementById('liveCanvas').classList.add('hidden');
+            document.getElementById('txtStreamStatus').textContent = langData[currentLang].streamStatusDisconn;
+            document.getElementById('metricFps').textContent = "0 FPS";
+            document.getElementById('metricRes').textContent = "--";
+        }
+
+        // Execute Tactical Command
+        function executeCommand(cmdType) {
+            if(connectedDevices.length === 0) {
+                showToast('Error: No active targets connected!', 'error');
+                logMessage(`[ERROR] Command ${cmdType} rejected: Zero target nodes available.`);
+                return;
+            }
+
+            switch(cmdType) {
+                case 'KILL_SWITCH':
+                    logMessage(`[COMMAND] Executed KILL_SWITCH on active nodes. Terminating sockets.`);
+                    showToast('Kill Switch executed successfully!', 'error');
+                    connectedDevices = [];
+                    renderTargetsTable();
+                    deactivateLiveStream();
+                    break;
+                case 'FREEZE_TOUCH':
+                    logMessage(`[COMMAND] Executed FREEZE_TOUCH on targets. Input interfaces locked.`);
+                    showToast('Target touch interface frozen!', 'success');
+                    break;
+                case 'STEALTH_MODE':
+                    logMessage(`[COMMAND] Activated STEALTH_MODE in background services. Traces masked.`);
+                    showToast('Stealth mode engaged successfully!', 'success');
+                    break;
+                case 'EXFIL_LOGS':
+                    logMessage(`[COMMAND] Exfiltrating encrypted target telemetry logs (AES-256)...`);
+                    showToast('Logs exfiltrated & secured!', 'success');
+                    break;
+            }
+        }
+
+        // Clear Terminal Log
+        function clearTerminal() {
+            const term = document.getElementById('terminalLog');
+            term.innerHTML = `<div class="text-emerald-600">[SYSTEM] Terminal logs cleared by operator.</div>`;
+            logMessage(`[SYSTEM] Operator cleared terminal logs.`);
+        }
+
+        // Live Handshake Timer
+        let secondsElapsed = 0;
+        setInterval(() => {
+            secondsElapsed++;
+            const hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+            const secs = String(secondsElapsed % 60).padStart(2, '0');
+            const timerEl = document.getElementById('handshakeTimer');
+            if(timerEl) timerEl.textContent = `${hrs}:${mins}:${secs}`;
+        }, 1000);
+    </script>
+</body>
+</html>
+```
